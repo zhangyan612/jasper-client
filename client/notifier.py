@@ -24,8 +24,9 @@ class Notifier(object):
         self.notifiers = []
 
         if 'gmail_address' in profile and 'gmail_password' in profile:
-            self.notifiers.append(self.NotificationClient(
-                self.handleEmailNotifications, None))
+            pass
+            # self.notifiers.append(self.NotificationClient(
+            #     self.handleEmailNotifications, None))
         else:
             self._logger.warning('gmail_address or gmail_password not set ' +
                                  'in profile, Gmail notifier will not be used')

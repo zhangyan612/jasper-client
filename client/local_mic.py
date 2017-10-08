@@ -24,9 +24,9 @@ class Mic:
         if not LISTEN:
             return self.prev
 
-        input = raw_input("YOU: ")
-        self.prev = input
-        return input
+        user_input = input("YOU: ")
+        self.prev = user_input
+        return user_input
 
     def say(self, phrase, OPTIONS=None):
         print("JASPER: %s" % phrase)

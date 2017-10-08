@@ -114,9 +114,11 @@ class Mic:
 
         # stores the lastN score values
         lastN = [i for i in range(30)]
-
+        average = 0
         # calculate the long run average, and thereby the proper threshold
-        for i in range(0, RATE / CHUNK * THRESHOLD_TIME):
+        thresh_max = RATE / CHUNK * THRESHOLD_TIME
+        print(thresh_max)
+        for i in range(0, int(round(thresh_max))):
 
             data = stream.read(CHUNK)
             frames.append(data)
@@ -136,7 +138,10 @@ class Mic:
         didDetect = False
 
         # start passively listening for disturbance above threshold
-        for i in range(0, RATE / CHUNK * LISTEN_TIME):
+        thres_passive = RATE / CHUNK * LISTEN_TIME
+        print(thres_passive)
+
+        for i in range(0, int(round(thres_passive))):
 
             data = stream.read(CHUNK)
             frames.append(data)
@@ -158,7 +163,10 @@ class Mic:
 
         # otherwise, let's keep recording for few seconds and save the file
         DELAY_MULTIPLIER = 1
-        for i in range(0, RATE / CHUNK * DELAY_MULTIPLIER):
+        thres_record = RATE / CHUNK * DELAY_MULTIPLIER
+        print(thres_record)
+
+        for i in range(0, int(round(thres_record))):
 
             data = stream.read(CHUNK)
             frames.append(data)
@@ -172,7 +180,7 @@ class Mic:
             wav_fp.setnchannels(1)
             wav_fp.setsampwidth(pyaudio.get_sample_size(pyaudio.paInt16))
             wav_fp.setframerate(RATE)
-            wav_fp.writeframes(''.join(frames))
+            wav_fp.writeframes(b''.join(frames))
             wav_fp.close()
             f.seek(0)
             # check if PERSONA was said
