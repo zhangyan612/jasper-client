@@ -52,7 +52,7 @@ class Mic:
         CHUNK = 1024
 
         # number of seconds to allow to establish threshold
-        THRESHOLD_TIME = 1
+        THRESHOLD_TIME = 2
 
         # prepare recording stream
         stream = self._audio.open(format=pyaudio.paInt16,
@@ -91,13 +91,13 @@ class Mic:
         Listens for PERSONA in everyday sound. Times out after LISTEN_TIME, so
         needs to be restarted.
         """
-
+        print('start passive listener')
         THRESHOLD_MULTIPLIER = 1.8
         RATE = 16000
         CHUNK = 1024
 
         # number of seconds to allow to establish threshold
-        THRESHOLD_TIME = 1
+        THRESHOLD_TIME = 1.5
 
         # number of seconds to listen before forcing restart
         LISTEN_TIME = 10
@@ -117,7 +117,7 @@ class Mic:
         average = 0
         # calculate the long run average, and thereby the proper threshold
         thresh_max = RATE / CHUNK * THRESHOLD_TIME
-        print(thresh_max)
+        # print(thresh_max)
         for i in range(0, int(round(thresh_max))):
 
             data = stream.read(CHUNK)
@@ -130,7 +130,7 @@ class Mic:
 
         # this will be the benchmark to cause a disturbance over!
         THRESHOLD = average * THRESHOLD_MULTIPLIER
-
+        print('disturbance threshold:', THRESHOLD)
         # save some memory for sound data
         frames = []
 
@@ -139,7 +139,7 @@ class Mic:
 
         # start passively listening for disturbance above threshold
         thres_passive = RATE / CHUNK * LISTEN_TIME
-        print(thres_passive)
+        # print(thres_passive)
 
         for i in range(0, int(round(thres_passive))):
 
@@ -162,9 +162,9 @@ class Mic:
         frames = frames[-20:]
 
         # otherwise, let's keep recording for few seconds and save the file
-        DELAY_MULTIPLIER = 1
+        DELAY_MULTIPLIER = 2.5
         thres_record = RATE / CHUNK * DELAY_MULTIPLIER
-        print(thres_record)
+        # print(thres_record)
 
         for i in range(0, int(round(thres_record))):
 
@@ -175,7 +175,11 @@ class Mic:
         stream.stop_stream()
         stream.close()
 
+
         with tempfile.NamedTemporaryFile(mode='w+b') as f:
+            # save audio data to file for testing purpose
+            self.save_speech(frames, self._audio)
+
             wav_fp = wave.open(f, 'wb')
             wav_fp.setnchannels(1)
             wav_fp.setsampwidth(pyaudio.get_sample_size(pyaudio.paInt16))
@@ -184,7 +188,7 @@ class Mic:
             wav_fp.close()
             f.seek(0)
             # check if PERSONA was said
-            transcribed = self.passive_stt_engine.transcribe(f)
+            transcribed = 'test transcribed' # self.passive_stt_engine.transcribe(f)
 
         if any(PERSONA in phrase for phrase in transcribed):
             return (THRESHOLD, PERSONA)
@@ -268,3 +272,17 @@ class Mic:
         # alter phrase before speaking
         phrase = alteration.clean(phrase)
         self.speaker.say(phrase)
+
+    def save_speech(self, data, p):
+        import time
+        filename = 'output_'+str(int(time.time()))
+        # writes data to WAV file
+        data = b''.join(data)
+        wf = wave.open(filename + '.wav', 'wb')
+        wf.setnchannels(1)
+        wf.setsampwidth(p.get_sample_size(pyaudio.paInt16))
+        wf.setframerate(16000)  # TODO make this value a function parameter?
+        wf.writeframes(data)
+        print('wrote data to WAV file')
+        wf.close()
+        return filename + '.wav'
