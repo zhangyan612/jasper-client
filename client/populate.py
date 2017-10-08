@@ -16,11 +16,13 @@ def run():
           "blank field to continue.")
 
     def simple_request(var, cleanVar, cleanInput=None):
-        input = input(cleanVar + ": ")
-        if input:
+        user_input = input(cleanVar + ": ")
+        if user_input:
             if cleanInput:
-                input = cleanInput(input)
-            profile[var] = input
+                user_input = cleanInput(user_input)
+            profile[var] = user_input
+
+    # questions
 
     # name
     simple_request('first_name', 'First name')
@@ -33,7 +35,7 @@ def run():
           "account, as at http://jasperproject.github.io/documentation/" +
           "software/#mailgun.\n")
     simple_request('gmail_address', 'Gmail address')
-    profile['gmail_password'] = getpass()
+    profile['gmail_password'] = 'somepass'
 
     # phone number
     def clean_number(s):
@@ -110,8 +112,9 @@ def run():
 
     response = input("\nIf you would like to choose a specific STT " +
                          "engine, please specify which.\nAvailable " +
-                         "implementations: %s. (Press Enter to default " +
-                         "to PocketSphinx): " % stt_engines.keys())
+                         "implementations: sphinx, google. (Press Enter to default " +
+                         "to PocketSphinx): ")
+
     if (response in stt_engines):
         profile["stt_engine"] = response
         api_key_name = stt_engines[response]

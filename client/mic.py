@@ -7,8 +7,8 @@ import tempfile
 import wave
 import audioop
 import pyaudio
-import alteration
-import jasperpath
+from client import alteration
+from client import jasperpath
 
 
 class Mic:
@@ -148,7 +148,7 @@ class Mic:
 
         # no use continuing if no flag raised
         if not didDetect:
-            print "No disturbance detected"
+            print("No disturbance detected")
             stream.stop_stream()
             stream.close()
             return (None, None)

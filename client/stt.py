@@ -6,15 +6,16 @@ import json
 import tempfile
 import logging
 import urllib
-import urlparse
+# import urlparse
+from urllib.parse import urlparse
 import re
 import subprocess
 from abc import ABCMeta, abstractmethod
 import requests
 import yaml
-import jasperpath
-import diagnose
-import vocabcompiler
+from client import jasperpath
+from client import diagnose
+from client import vocabcompiler
 
 
 class AbstractSTTEngine(object):
@@ -633,8 +634,8 @@ def get_engine_by_slug(slug=None):
     if not slug or type(slug) is not str:
         raise TypeError("Invalid slug '%s'", slug)
 
-    selected_engines = filter(lambda engine: hasattr(engine, "SLUG") and
-                              engine.SLUG == slug, get_engines())
+    selected_engines = list(filter(lambda engine: hasattr(engine, "SLUG") and
+                              engine.SLUG == slug, get_engines()))
     if len(selected_engines) == 0:
         raise ValueError("No STT engine found for slug '%s'" % slug)
     else:

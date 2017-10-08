@@ -7,6 +7,7 @@ Speaker methods:
     play - play the audio in 'filename'
     is_available - returns True if the platform supports this implementation
 """
+import sys
 import os
 import platform
 import re
@@ -42,7 +43,6 @@ except ImportError:
 from client import diagnose
 from client import jasperpath
 
-
 class AbstractTTSEngine(object):
     """
     Generic parent class for all speakers
@@ -62,8 +62,14 @@ class AbstractTTSEngine(object):
     @classmethod
     @abstractmethod
     def is_available(cls):
-        return diagnose.check_executable('aplay')
-
+        print('check abstrct engine')
+        if sys.platform == 'linux':
+            return diagnose.check_executable('aplay')
+        elif sys.platform == 'win32':
+            # print('check abstrct engine')
+            # available = diagnose.check_executable('start')
+            # print(available)
+            return True
     def __init__(self, **kwargs):
         self._logger = logging.getLogger(__name__)
 
@@ -91,8 +97,8 @@ class AbstractMp3TTSEngine(AbstractTTSEngine):
     """
     @classmethod
     def is_available(cls):
-        return (super(AbstractMp3TTSEngine, cls).is_available() and
-                diagnose.check_python_import('mad'))
+        return (super(AbstractMp3TTSEngine, cls).is_available())
+                #and diagnose.check_python_import('mad'))
 
     def play_mp3(self, filename):
         mf = mad.MadFile(filename)
@@ -432,9 +438,13 @@ class GoogleTTS(AbstractMp3TTSEngine):
 
     @classmethod
     def is_available(cls):
-        return (super(cls, cls).is_available() and
+        print('check google availablity')
+        print(cls)
+        available = (super(cls, cls).is_available() and
                 diagnose.check_python_import('gtts') and
                 diagnose.check_network_connection())
+        print(available)
+        return available
 
     @classmethod
     def get_config(cls):
@@ -652,8 +662,8 @@ def get_engine_by_slug(slug=None):
     if not slug or type(slug) is not str:
         raise TypeError("Invalid slug '%s'", slug)
 
-    selected_engines = filter(lambda engine: hasattr(engine, "SLUG") and
-                              engine.SLUG == slug, get_engines())
+    selected_engines = list(filter(lambda engine: hasattr(engine, "SLUG") and
+                              engine.SLUG == slug, get_engines()))
     if len(selected_engines) == 0:
         raise ValueError("No TTS engine found for slug '%s'" % slug)
     else:

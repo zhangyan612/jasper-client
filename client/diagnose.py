@@ -59,9 +59,11 @@ def check_executable(executable):
     executable_path = find_executable(executable)
     found = executable_path is not None
     if found:
+        print('executable found')
         logger.debug("Executable '%s' found: '%s'", executable,
                      executable_path)
     else:
+        print('executable not found')
         logger.debug("Executable '%s' not found", executable)
     return found
 
