@@ -1,6 +1,6 @@
 # -*- coding: utf-8-*-
 import re
-import facebook
+# import facebook
 
 
 WORDS = ["FACEBOOK", "NOTIFICATION"]
@@ -18,34 +18,35 @@ def handle(text, mic, profile):
         profile -- contains information related to the user (e.g., phone
                    number)
     """
-    oauth_access_token = profile['keys']['FB_TOKEN']
+    pass
+    # oauth_access_token = profile['keys']['FB_TOKEN']
 
-    graph = facebook.GraphAPI(oauth_access_token)
+    # graph = facebook.GraphAPI(oauth_access_token)
 
-    try:
-        results = graph.request("me/notifications")
-    except facebook.GraphAPIError:
-        mic.say("I have not been authorized to query your Facebook. If you " +
-                "would like to check your notifications in the future, " +
-                "please visit the Jasper dashboard.")
-        return
-    except:
-        mic.say(
-            "I apologize, there's a problem with that service at the moment.")
-
-    if not len(results['data']):
-        mic.say("You have no Facebook notifications. ")
-        return
-
-    updates = []
-    for notification in results['data']:
-        updates.append(notification['title'])
-
-    count = len(results['data'])
-    mic.say("You have " + str(count) +
-            " Facebook notifications. " + " ".join(updates) + ". ")
-
-    return
+    # try:
+    #     results = graph.request("me/notifications")
+    # except facebook.GraphAPIError:
+    #     mic.say("I have not been authorized to query your Facebook. If you " +
+    #             "would like to check your notifications in the future, " +
+    #             "please visit the Jasper dashboard.")
+    #     return
+    # except:
+    #     mic.say(
+    #         "I apologize, there's a problem with that service at the moment.")
+    #
+    # if not len(results['data']):
+    #     mic.say("You have no Facebook notifications. ")
+    #     return
+    #
+    # updates = []
+    # for notification in results['data']:
+    #     updates.append(notification['title'])
+    #
+    # count = len(results['data'])
+    # mic.say("You have " + str(count) +
+    #         " Facebook notifications. " + " ".join(updates) + ". ")
+    #
+    # return
 
 
 def isValid(text):

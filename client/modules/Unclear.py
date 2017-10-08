@@ -1,10 +1,10 @@
 # -*- coding: utf-8-*-
-from sys import maxint
+# from sys import maxint
 import random
 
 WORDS = []
 
-PRIORITY = -(maxint + 1)
+PRIORITY = -(10000 + 1)
 
 
 def handle(text, mic, profile):

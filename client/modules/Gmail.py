@@ -58,30 +58,30 @@ def fetchUnreadEmails(profile, since=None, markRead=False, limit=None):
         Returns:
         A list of unread email objects.
     """
-    conn = imaplib.IMAP4_SSL('imap.gmail.com')
-    conn.debug = 0
-    conn.login(profile['gmail_address'], profile['gmail_password'])
-    conn.select(readonly=(not markRead))
-
-    msgs = []
-    (retcode, messages) = conn.search(None, '(UNSEEN)')
-
-    if retcode == 'OK' and messages != ['']:
-        numUnread = len(messages[0].split(' '))
-        if limit and numUnread > limit:
-            return numUnread
-
-        for num in messages[0].split(' '):
-            # parse email RFC822 format
-            ret, data = conn.fetch(num, '(RFC822)')
-            msg = email.message_from_string(data[0][1])
-
-            if not since or getDate(msg) > since:
-                msgs.append(msg)
-    conn.close()
-    conn.logout()
-
-    return msgs
+    pass
+    # conn = imaplib.IMAP4_SSL('imap.gmail.com')
+    # conn.debug = 0
+    # conn.login(profile['gmail_address'], profile['gmail_password'])
+    # conn.select(readonly=(not markRead))
+    #
+    # msgs = []
+    # (retcode, messages) = conn.search(None, '(UNSEEN)')
+    #
+    # if retcode == 'OK' and messages != ['']:
+    #     numUnread = len(messages[0].split(' '))
+    #     if limit and numUnread > limit:
+    #         return numUnread
+    #
+    #     for num in messages[0].split(' '):
+    #         # parse email RFC822 format
+    #         ret, data = conn.fetch(num, '(RFC822)')
+    #         msg = email.message_from_string(data[0][1])
+    #
+    #         if not since or getDate(msg) > since:
+    #             msgs.append(msg)
+    # conn.close()
+    # conn.logout()
+    # return msgs
 
 
 def handle(text, mic, profile):

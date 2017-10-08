@@ -7,7 +7,7 @@ import feedparser
 import requests
 import bs4
 from client.app_utils import getTimezone
-from semantic.dates import DateService
+# from semantic.dates import DateService
 
 WORDS = ["WEATHER", "TODAY", "TOMORROW"]
 
@@ -72,23 +72,23 @@ def get_locations():
         yield info
 
 
-def get_forecast_by_name(location_name):
-    entries = feedparser.parse("http://rss.wunderground.com/auto/rss_full/%s"
-                               % urllib.quote(location_name))['entries']
-    if entries:
-        # We found weather data the easy way
-        return entries
-    else:
-        # We try to get weather data via the list of stations
-        for location in get_locations():
-            if location['name'] == location_name:
-                return get_forecast_by_wmo_id(location['wmo_id'])
-
-
-def get_forecast_by_wmo_id(wmo_id):
-    return feedparser.parse("http://rss.wunderground.com/auto/" +
-                            "rss_full/global/stations/%s.xml"
-                            % wmo_id)['entries']
+# def get_forecast_by_name(location_name):
+#     entries = feedparser.parse("http://rss.wunderground.com/auto/rss_full/%s"
+#                                % urllib.quote(location_name))['entries']
+#     if entries:
+#         # We found weather data the easy way
+#         return entries
+#     else:
+#         # We try to get weather data via the list of stations
+#         for location in get_locations():
+#             if location['name'] == location_name:
+#                 return get_forecast_by_wmo_id(location['wmo_id'])
+#
+#
+# def get_forecast_by_wmo_id(wmo_id):
+#     return feedparser.parse("http://rss.wunderground.com/auto/" +
+#                             "rss_full/global/stations/%s.xml"
+#                             % wmo_id)['entries']
 
 
 def handle(text, mic, profile):
@@ -103,62 +103,63 @@ def handle(text, mic, profile):
         profile -- contains information related to the user (e.g., phone
                    number)
     """
-    forecast = None
-    if 'wmo_id' in profile:
-        forecast = get_forecast_by_wmo_id(str(profile['wmo_id']))
-    elif 'location' in profile:
-        forecast = get_forecast_by_name(str(profile['location']))
-
-    if not forecast:
-        mic.say("I'm sorry, I can't seem to access that information. Please " +
-                "make sure that you've set your location on the dashboard.")
-        return
-
-    tz = getTimezone(profile)
-
-    service = DateService(tz=tz)
-    date = service.extractDay(text)
-    if not date:
-        date = datetime.datetime.now(tz=tz)
-    weekday = service.__daysOfWeek__[date.weekday()]
-
-    if date.weekday() == datetime.datetime.now(tz=tz).weekday():
-        date_keyword = "Today"
-    elif date.weekday() == (
-            datetime.datetime.now(tz=tz).weekday() + 1) % 7:
-        date_keyword = "Tomorrow"
-    else:
-        date_keyword = "On " + weekday
-
-    output = None
-
-    for entry in forecast:
-        try:
-            date_desc = entry['title'].split()[0].strip().lower()
-            if date_desc == 'forecast':
-                # For global forecasts
-                date_desc = entry['title'].split()[2].strip().lower()
-                weather_desc = entry['summary']
-            elif date_desc == 'current':
-                # For first item of global forecasts
-                continue
-            else:
-                # US forecasts
-                weather_desc = entry['summary'].split('-')[1]
-
-            if weekday == date_desc:
-                output = date_keyword + \
-                    ", the weather will be " + weather_desc + "."
-                break
-        except:
-            continue
-
-    if output:
-        output = replaceAcronyms(output)
-        mic.say(output)
-    else:
-        mic.say(
-            "I'm sorry. I can't see that far ahead.")
+    pass
+    # forecast = None
+    # if 'wmo_id' in profile:
+    #     forecast = get_forecast_by_wmo_id(str(profile['wmo_id']))
+    # elif 'location' in profile:
+    #     forecast = get_forecast_by_name(str(profile['location']))
+    #
+    # if not forecast:
+    #     mic.say("I'm sorry, I can't seem to access that information. Please " +
+    #             "make sure that you've set your location on the dashboard.")
+    #     return
+    #
+    # tz = getTimezone(profile)
+    #
+    # service = DateService(tz=tz)
+    # date = service.extractDay(text)
+    # if not date:
+    #     date = datetime.datetime.now(tz=tz)
+    # weekday = service.__daysOfWeek__[date.weekday()]
+    #
+    # if date.weekday() == datetime.datetime.now(tz=tz).weekday():
+    #     date_keyword = "Today"
+    # elif date.weekday() == (
+    #         datetime.datetime.now(tz=tz).weekday() + 1) % 7:
+    #     date_keyword = "Tomorrow"
+    # else:
+    #     date_keyword = "On " + weekday
+    #
+    # output = None
+    #
+    # for entry in forecast:
+    #     try:
+    #         date_desc = entry['title'].split()[0].strip().lower()
+    #         if date_desc == 'forecast':
+    #             # For global forecasts
+    #             date_desc = entry['title'].split()[2].strip().lower()
+    #             weather_desc = entry['summary']
+    #         elif date_desc == 'current':
+    #             # For first item of global forecasts
+    #             continue
+    #         else:
+    #             # US forecasts
+    #             weather_desc = entry['summary'].split('-')[1]
+    #
+    #         if weekday == date_desc:
+    #             output = date_keyword + \
+    #                 ", the weather will be " + weather_desc + "."
+    #             break
+    #     except:
+    #         continue
+    #
+    # if output:
+    #     output = replaceAcronyms(output)
+    #     mic.say(output)
+    # else:
+    #     mic.say(
+    #         "I'm sorry. I can't see that far ahead.")
 
 
 def isValid(text):
