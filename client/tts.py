@@ -16,7 +16,8 @@ import pipes
 import logging
 import wave
 import urllib
-import urlparse
+from urllib.parse import urlparse
+# import urlparse
 import requests
 from abc import ABCMeta, abstractmethod
 
@@ -38,8 +39,8 @@ try:
 except ImportError:
     pass
 
-import diagnose
-import jasperpath
+from client import diagnose
+from client import jasperpath
 
 
 class AbstractTTSEngine(object):
@@ -100,7 +101,7 @@ class AbstractMp3TTSEngine(AbstractTTSEngine):
             wav.setframerate(mf.samplerate())
             wav.setnchannels(1 if mf.mode() == mad.MODE_SINGLE_CHANNEL else 2)
             # 4L is the sample width of 32 bit audio
-            wav.setsampwidth(4L)
+            wav.setsampwidth(4) #
             frame = mf.read()
             while frame is not None:
                 wav.writeframes(frame)
