@@ -100,21 +100,27 @@ class AbstractMp3TTSEngine(AbstractTTSEngine):
         return (super(AbstractMp3TTSEngine, cls).is_available())
                 #and diagnose.check_python_import('mad'))
 
-    def play_mp3(self, filename):
-        mf = mad.MadFile(filename)
-        with tempfile.NamedTemporaryFile(suffix='.wav') as f:
-            wav = wave.open(f, mode='wb')
-            wav.setframerate(mf.samplerate())
-            wav.setnchannels(1 if mf.mode() == mad.MODE_SINGLE_CHANNEL else 2)
-            # 4L is the sample width of 32 bit audio
-            wav.setsampwidth(4) #
-            frame = mf.read()
-            while frame is not None:
-                wav.writeframes(frame)
-                frame = mf.read()
-            wav.close()
-            self.play(f.name)
+    # def play_mp3(self, filename):
+    #     mf = mad.MadFile(filename)
+    #     with tempfile.NamedTemporaryFile(suffix='.wav') as f:
+    #         wav = wave.open(f, mode='wb')
+    #         wav.setframerate(mf.samplerate())
+    #         wav.setnchannels(1 if mf.mode() == mad.MODE_SINGLE_CHANNEL else 2)
+    #         # 4L is the sample width of 32 bit audio
+    #         wav.setsampwidth(4) #
+    #         frame = mf.read()
+    #         while frame is not None:
+    #             wav.writeframes(frame)
+    #             frame = mf.read()
+    #         wav.close()
+    #         self.play(f.name)
 
+    def play_mp3(self, file_path):
+        if sys.platform == 'linux':
+            subprocess.call("aplay " + file_path)
+        elif sys.platform == 'win32':
+            # call("start tmp/temp.wav", shell=True)
+            s = subprocess.Popen("start " + file_path, shell=True)
 
 class DummyTTS(AbstractTTSEngine):
     """

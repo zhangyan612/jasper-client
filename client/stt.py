@@ -340,13 +340,13 @@ class GoogleSTT(AbstractSTTEngine):
 
     def _regenerate_request_url(self):
         if self.api_key and self.language:
-            query = urllib.urlencode({'output': 'json',
+            query = urllib.parse.urlencode({'output': 'json',
                                       'client': 'chromium',
                                       'key': self.api_key,
                                       'lang': self.language,
                                       'maxresults': 6,
                                       'pfilter': 2})
-            self._request_url = urlparse.urlunparse(
+            self._request_url = urllib.parse.urlunparse(
                 ('https', 'www.google.com', '/speech-api/v2/recognize', '',
                  query, ''))
         else:
